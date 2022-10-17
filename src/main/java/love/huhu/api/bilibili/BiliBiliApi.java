@@ -25,7 +25,7 @@ public class BiliBiliApi implements PlatformApi {
         }
         Object data = object.getObj("data");
         packageData(data,subscription);
-        System.err.println("room {"+roomId+"} 's live status is {"+subscription.getBroadcast().getLiveStatus()+"}");
+//        System.err.println("room {"+roomId+"} 's live status is {"+subscription.getBroadcast().getLiveStatus()+"}");
         return subscription.getBroadcast().getLiveStatus() == 1;
     }
 

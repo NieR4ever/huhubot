@@ -20,8 +20,5 @@ dependencies {
     compileOnly("net.mamoe:mirai-core:$CORE_VERSION") // mirai-core 的 API
     compileOnly("net.mamoe:mirai-console:$CONSOLE_VERSION") // 后端
     api("cn.hutool:hutool-all:5.8.5")
-    // https://mvnrepository.com/artifact/org.slf4j/slf4j-api
-    implementation("org.slf4j:slf4j-api:2.0.0")
-
     testImplementation("net.mamoe:mirai-console-terminal:$CONSOLE_VERSION") // 前端, 用于启动测试
 }

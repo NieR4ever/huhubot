@@ -63,7 +63,6 @@ public final class BotMain extends JavaPlugin {
 
     private void listenBroadcast() {
         CronUtil.schedule("* * * * * *", (Runnable) () -> {
-            System.out.println("正在查询开播状态");
             DataProperties.subscriptions.forEach(subscription -> new TimeTask(subscription).start());
         });
         if (Context.configuration.getEnable()) {
