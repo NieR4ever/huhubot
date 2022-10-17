@@ -1,123 +1,144 @@
 package love.huhu;
 
-import cn.hutool.core.lang.Assert;
+import cn.hutool.core.io.FileUtil;
 import cn.hutool.cron.CronUtil;
-import cn.hutool.extra.ssh.JschUtil;
-import cn.hutool.extra.tokenizer.TokenizerUtil;
+import cn.hutool.setting.Setting;
+import love.huhu.command.SettingCommand;
+import love.huhu.command.SubscribeCommand;
+import love.huhu.pojo.Configuration;
 import love.huhu.pojo.Subscription;
-import love.huhu.properties.ConfigProperties;
+import love.huhu.properties.Context;
 import love.huhu.properties.DataProperties;
-import net.mamoe.mirai.Bot;
+import love.huhu.task.TimeTask;
+import net.mamoe.mirai.console.command.CommandManager;
+import net.mamoe.mirai.console.permission.AbstractPermitteeId;
+import net.mamoe.mirai.console.permission.PermissionId;
+import net.mamoe.mirai.console.permission.PermissionService;
 import net.mamoe.mirai.console.plugin.jvm.JavaPlugin;
 import net.mamoe.mirai.console.plugin.jvm.JvmPluginDescriptionBuilder;
-import net.mamoe.mirai.contact.Group;
+import net.mamoe.mirai.console.util.SemVersion;
 import net.mamoe.mirai.event.GlobalEventChannel;
 import net.mamoe.mirai.event.events.BotOnlineEvent;
-import net.mamoe.mirai.event.events.FriendMessageEvent;
-import net.mamoe.mirai.message.data.AtAll;
-import net.mamoe.mirai.message.data.MessageChain;
-import net.mamoe.mirai.message.data.MessageChainBuilder;
-import net.mamoe.mirai.utils.ExternalResource;
 
 import java.io.File;
-import java.util.HashMap;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public final class BotMain extends JavaPlugin {
     public static final BotMain INSTANCE = new BotMain();
 
     private BotMain() {
-        super(new JvmPluginDescriptionBuilder("love.huhu.bot", "1.0")
+        super(new JvmPluginDescriptionBuilder( // 必要属性
+                "love.huhu.bot", // id
+                "1.0" // version
+        ).author("无糖雪碧")
                 .name("提醒开播机器人")
-                .info("为qq群和个人提供提醒主播开播的服务")
-                .author("无糖雪碧")
+                .info("为qq群提供提醒主播开播的服务")
                 .build());
     }
 
-
     @Override
     public void onEnable() {
+        init();
+        registerPermission();
         GlobalEventChannel.INSTANCE.parentScope(BotMain.INSTANCE).subscribeAlways(BotOnlineEvent.class, event -> {
-            //初始化bot
-            ConfigProperties.bot = Bot.getInstance(Long.parseLong(ConfigProperties.botQQNumber));
-            listenPrivate();
+            //开始监听直播间
+            listenBroadcast();
         });
     }
 
-    private void listenPrivate() {
-        ConfigProperties.bot.getEventChannel().parentScope(BotMain.INSTANCE).subscribeAlways(FriendMessageEvent.class, event -> {
-            String command = event.getMessage().contentToString();
-            if (!command.startsWith("#")) return;
-            command = command.replace("#", "");
-            System.out.println("command"+command);
-            if (command.matches("^启动$") && !ConfigProperties.enablePlugin) {
-                System.out.println("正在启动插件");
-                ConfigProperties.enablePlugin = true;
-                DataProperties.subscriptions.forEach(
-                        subscription -> {
-                            CronUtil.schedule("* * * * *", (Runnable) () -> {
-                                boolean newLiveStatus = DataProperties.api.getLiveStatus(subscription.getRoomId());
-                                boolean oldLiveStatus = subscription.isStreaming();
-                                if (!oldLiveStatus && newLiveStatus) {
-                                    //之前未开播,现在开播了
-                                    //通知群
-                                    subscription.getGroups().forEach(g -> {
-                                        System.out.println("开始通知"+g);
-                                        Group group = ConfigProperties.bot.getGroup(g);
-                                        Assert.notNull(group,"未找到群号为{}的群，请检查群号或加入该群",g);
-                                        //todo 这里不应该写死
-                                        MessageChainBuilder builder = new MessageChainBuilder();
-                                        File kaibo = new File(BotMain.INSTANCE.getDataFolderPath() + "/kaibo.png");
-                                        MessageChain msg = builder.append("开播了")
-//                                                .append(AtAll.INSTANCE)
-                                                .append(ExternalResource.uploadAsImage(kaibo, group)).build();
-                                        group.sendMessage(msg);
-                                    });
-                                }
-                                //更新开播状态
-                                if (oldLiveStatus ^ newLiveStatus) {
-                                    subscription.setStreaming(newLiveStatus);
-                                }
-                            });
-                        }
-                );
-
-                CronUtil.start();
-                System.out.println("启动成功");
-            }
-            if (command.matches("^关闭$") && ConfigProperties.enablePlugin) {
-                System.out.println("正在关闭插件");
-                ConfigProperties.enablePlugin = false;
-                CronUtil.stop();
-            }
-            if (command.matches("^订阅.*$")) {
-                System.out.println("正在订阅直播间");
-                String s = command.replace("订阅 ", "");
-                String[] params = s.split(ConfigProperties.delimiter);
-                if (params.length != 3) {
-                    event.getSubject().sendMessage("参数格式不正确，应为\n" +
-                            "#订阅 【平台】 【房间号】【通知群号(使用逗号分隔)】\n" +
-                            "例如：\n" +
-                            "#订阅 b站 1013 228029238,500111023");
-                }
-                String platform = params[0];
-                String roomId = params[1];
-                String[] groups = params[2].replaceAll("，", ",").split(",");
-                Subscription subscription = new Subscription(platform, roomId, groups);
-                DataProperties.subscriptions.add(subscription);
-                event.getSubject().sendMessage("订阅成功");
-            }
-            if (command.matches("^查看订阅$")) {
-                System.out.println("正在查看订阅");
-                StringBuilder sb = new StringBuilder();
-                DataProperties.subscriptions.forEach(subscription -> {
-                    sb.append(subscription.toString());
-                });
-                if (sb.toString().isEmpty()) {
-                    event.getSubject().sendMessage("订阅列表为空");
-                } else{
-                    event.getSubject().sendMessage(sb.toString());
-                }
+    private void registerPermission() {
+        List<AbstractPermitteeId.ExactUser> users = Arrays.stream(Context.configuration.getAdmins())
+                .map(admin-> new AbstractPermitteeId.ExactUser(Long.parseLong(admin)))
+                .collect(Collectors.toList());
+        PermissionId permissionId = this.getParentPermission().getId();
+        users.forEach(user->{
+            if (!PermissionService.hasPermission(user,permissionId)) {
+                PermissionService.permit(user,permissionId);
             }
         });
     }
+
+
+    private void listenBroadcast() {
+        CronUtil.schedule("* * * * * *", (Runnable) () -> {
+            System.out.println("正在查询开播状态");
+            DataProperties.subscriptions.forEach(subscription -> new TimeTask(subscription).start());
+        });
+        if (Context.configuration.getEnable()) {
+            CronUtil.start();
+        }
+    }
+
+    private void init() {
+        //读取订阅数据
+        loadSubscribeData("subscriptions.setting");
+        //读取配置
+        loadConfig("config.setting");
+        //注册命令
+        registerCommand();
+
+    }
+
+    private void registerCommand() {
+        CommandManager.INSTANCE.registerCommand(new SettingCommand(),false);
+        CommandManager.INSTANCE.registerCommand(new SubscribeCommand(),false);
+    }
+
+
+    private void loadConfig(String configFileName) {
+        File file = resolveConfigFile(configFileName);
+        if (!file.exists()) {
+            FileUtil.touch(file);
+            Setting setting = new Setting(file, StandardCharsets.UTF_8, true);
+            setting.set("enable","false");
+            setting.set("admins","123456");
+            setting.set("bilibili","b站,bili,B站");
+            setting.set("douyu","斗鱼,douyu");
+            setting.set("version","1.0");
+            setting.store();
+        }
+        Setting setting = new Setting(file, StandardCharsets.UTF_8, true);
+        //检查配置版本
+        String version = setting.getStr("version");
+        SemVersion pluginVersion = this.getDescription().getVersion();
+        SemVersion configVersion = SemVersion.parse(version);
+        if (pluginVersion.compareTo(configVersion)>0) {
+            //更新配置
+            getLogger().info("当前插件版本{"+pluginVersion+"},当前配置版本{"+configVersion+"}");
+            updateConfig(setting,getNewSetting());
+            getLogger().info("配置文件更新成功");
+        }
+        Configuration configuration = Configuration.convert(setting);
+        Context.configuration = configuration;
+    }
+
+    private void updateConfig(Setting setting, Setting newSetting) {
+        setting.addSetting(newSetting);
+        setting.store();
+    }
+
+    private Setting getNewSetting() {
+        Setting setting = new Setting();
+//        setting.set("bilibili","b站,bili,B站");
+//        setting.set("douyu","斗鱼,douyu");
+//        setting.set("version","1.0");
+        return setting;
+    }
+
+    private void loadSubscribeData(String dataFileName) {
+        File file = resolveDataFile(dataFileName);
+        if (!file.exists()) {
+            FileUtil.touch(file);
+        }
+        Setting setting = new Setting(file, StandardCharsets.UTF_8, true);
+        Set<Subscription> subscriptions = new HashSet<>();
+        for (String group : setting.getGroups()) {
+            Subscription subscription = Subscription.convert(setting,group);
+            subscriptions.add(subscription);
+        }
+        DataProperties.subscriptions = subscriptions;
+    }
+
 }
