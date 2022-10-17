@@ -6,9 +6,14 @@
 > 主播开播时自动向指定qq群发送直播通知，现支持斗鱼和b站
 
 ## 食用指南
+0. 先使用下面这条命令安装[project-mirai/chat-command](https://github.com/project-mirai/chat-command)插件，或者手动安装
+
+   > ./mcl --update-package net.mamoe:chat-command --channel stable --type plugin
 
 1. 将本插件放入`plugins`文件夹中
+
 2. 启动`mcl`，此时将在`config/love.huhu.bot`目录下生成`config.setting`配置文件
+
 3. 编辑配置文件
 
 ```properties
