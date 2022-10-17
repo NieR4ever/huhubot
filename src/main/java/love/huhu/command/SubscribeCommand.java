@@ -24,13 +24,13 @@ import java.util.stream.Collectors;
  */
 public class SubscribeCommand extends JCompositeCommand {
     public SubscribeCommand() {
-        this(BotMain.INSTANCE,"sub","sub");
+        this(BotMain.INSTANCE,"sub","订阅","dy");
     }
     public SubscribeCommand(@NotNull CommandOwner owner, @NotNull String primaryName, @NotNull String... secondaryNames) {
         super(owner, primaryName, secondaryNames);
     }
 
-    @SubCommand("add")
+    @SubCommand({"add","添加","新增","update","修改"})
     public void add(CommandSender sender,String name, String platform,String roomId, String... groups) {
         Subscription subscription = new Subscription(name, platform, roomId, groups,sender.getBot().getId());
         if (DataProperties.subscriptions.contains(subscription)) {
@@ -50,7 +50,7 @@ public class SubscribeCommand extends JCompositeCommand {
         DataProperties.subscriptions.add(subscription);
         sender.sendMessage("添加订阅成功");
     }
-    @SubCommand("save")
+    @SubCommand({"save","保存","bc"})
     public void save(CommandSender sender) {
         Setting setting = new Setting(BotMain.INSTANCE.resolveDataFile("subscriptions.setting").getAbsoluteFile(), StandardCharsets.UTF_8, true);
         List<String> groupToRemove = setting.getGroups().stream().filter(group -> DataProperties.subscriptions.stream().noneMatch(subscription -> subscription.getName().equals(group))).collect(Collectors.toList());
@@ -65,12 +65,12 @@ public class SubscribeCommand extends JCompositeCommand {
         setting.store();
         sender.sendMessage("保存/修改订阅成功");
     }
-    @SubCommand("rm")
+    @SubCommand({"rm","删除","移除","del","delete","remove","sc"})
     public void rm(CommandSender sender, String name) {
         DataProperties.subscriptions.removeIf(subscription -> subscription.getName().equals(name.trim()));
         sender.sendMessage("删除订阅成功");
     }
-    @SubCommand("list")
+    @SubCommand({"list","列表","all","lb"})
     public void list(CommandSender sender) {
         MessageChainBuilder builder = new MessageChainBuilder();
         if (DataProperties.subscriptions.isEmpty()) {
@@ -88,7 +88,7 @@ public class SubscribeCommand extends JCompositeCommand {
         });
         sender.sendMessage(builder.build());
     }
-    @SubCommand("notify")
+    @SubCommand({"notify","通知","tz"})
     public void notify(CommandSender sender,String name, MessageContent... messages) {
         MessageChainBuilder builder = new MessageChainBuilder();
         for (MessageContent message : messages) {
@@ -105,7 +105,7 @@ public class SubscribeCommand extends JCompositeCommand {
         });
         sender.sendMessage("修改通知内容成功");
     }
-    @SubCommand("help")
+    @SubCommand({"help","帮助","h","bz"})
     public void help(CommandSender sender) {
         MessageChainBuilder builder = new MessageChainBuilder();
         builder

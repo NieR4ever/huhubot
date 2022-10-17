@@ -23,14 +23,14 @@ public final class SettingCommand extends JCompositeCommand {
 
 
     public SettingCommand() {
-        this(BotMain.INSTANCE,"set","set");
+        this(BotMain.INSTANCE,"set","设置","sz");
     }
 
     public SettingCommand(@NotNull CommandOwner owner, @NotNull String primaryName, @NotNull String... secondaryNames) {
         super(owner, primaryName, secondaryNames);
     }
 
-    @SubCommand("start")
+    @SubCommand({"start","启动","开启","run"})
     public void start(CommandSender sender) {
         if (!Context.configuration.getEnable()) {
             Context.configuration.setEnable(true);
@@ -47,7 +47,7 @@ public final class SettingCommand extends JCompositeCommand {
             CronUtil.getScheduler().stop(false);
         }
     }
-    @SubCommand("stop")
+    @SubCommand({"stop","暂停","停止","关闭","close"})
     public void stop(CommandSender sender) {
         if (Context.configuration.getEnable()) {
             Context.configuration.setEnable(false);
@@ -58,12 +58,12 @@ public final class SettingCommand extends JCompositeCommand {
         }
     }
 
-    @SubCommand("help")
+    @SubCommand({"help","帮助","h","bz"})
     public void help(CommandSender sender) {
         MessageChainBuilder builder = new MessageChainBuilder();
         builder
                 .append("/set start").append("\n")
-                .append("解释：开始监听直播间列表").append("\n")
+                .append("解释：开始监听直播间列表，默认为开启").append("\n")
                 .append("/set stop").append("\n")
                 .append("解释：停止监听直播间列表").append("\n");
         MessageChain chain = builder.build();

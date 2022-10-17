@@ -92,9 +92,9 @@ public final class BotMain extends JavaPlugin {
         if (!file.exists()) {
             FileUtil.touch(file);
             Setting setting = new Setting(file, StandardCharsets.UTF_8, true);
-            setting.set("enable","false");
+            setting.set("enable","true");
             setting.set("admins","123456");
-            setting.set("bilibili","b站,bili,B站");
+            setting.set("bilibili","b站,bili,bilibili,B站");
             setting.set("douyu","斗鱼,douyu");
             setting.set("version","1.0");
             setting.store();
