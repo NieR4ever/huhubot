@@ -3,7 +3,7 @@
 ![发行版](https://img.shields.io/github/v/release/Nier4ever/huhubot?style=flat-square)
 ![下载量](https://img.shields.io/github/downloads/nier4ever/huhubot/total?style=flat-square)
 
-> 主播开播时自动向指定qq群发送直播通知
+> 主播开播时自动向指定qq群发送直播通知，现支持斗鱼和b站
 
 ## 食用指南
 
