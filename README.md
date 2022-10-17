@@ -32,12 +32,12 @@ version = 1.0
 
 ## 指令
 
-+ `set`|`设置`|`sz`
++ /`set`|`设置`|`sz`
 
   + `start`|`启动`|`开启`|`run`
   + `stop`|`暂停`|`停止`|`关闭`|`close`
   + `help`|`帮助`|`h`|`bz`
-+ `sub`|`订阅`|`dy`
++ /`sub`|`订阅`|`dy`
   + `add`|`添加`|`新增`|`update`|`修改`
   + `save`|`保存`|`bc`
   + `rm`|`删除`|`移除`|`del`|`delete`|`remove`|`sc`
