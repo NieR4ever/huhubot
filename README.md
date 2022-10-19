@@ -48,7 +48,7 @@ version = 1.0
   + `start`|`启动`|`开启`|`run`
   + `stop`|`暂停`|`停止`|`关闭`|`close`
   + `help`|`帮助`|`h`|`bz`
-  + `reload`
+  + `reload`|`cz`|`重新载入`|`读取订阅`|`载入订阅`
 + /`sub`|`订阅`|`dy`
   + `add`|`添加`|`新增`|`update`|`修改`
   + `save`|`保存`|`bc`
@@ -56,6 +56,7 @@ version = 1.0
   + `list`|`列表`|`all`|`lb`
   + `notify`|`通知`|`tz`
   + `help`|`帮助`|`h`|`bz`
+  + `reload`|`cz`|`重新载入`|`读取订阅`|`载入订阅`
 
 > 指令具体含义可使用`/set h`和`/sub h`指令查看
 
