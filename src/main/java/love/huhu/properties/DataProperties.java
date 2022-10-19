@@ -3,6 +3,7 @@ package love.huhu.properties;
 import love.huhu.api.bilibili.BiliBiliApi;
 import love.huhu.pojo.Subscription;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -14,5 +15,6 @@ import java.util.Set;
  */
 public class DataProperties {
     public static Set<Subscription> subscriptions = new HashSet<>();
-    public static BiliBiliApi api = new BiliBiliApi();
+    public static File subscribeData = null;
+    public static final String subscribeDataName = "subscriptions.setting";
 }

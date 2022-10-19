@@ -2,6 +2,7 @@ package love.huhu.command;
 
 import cn.hutool.setting.Setting;
 import love.huhu.BotMain;
+import love.huhu.operator.DataOperator;
 import love.huhu.pojo.Subscription;
 import love.huhu.properties.DataProperties;
 import net.mamoe.mirai.console.command.CommandOwner;
@@ -30,6 +31,7 @@ public class SubscribeCommand extends JCompositeCommand {
         super(owner, primaryName, secondaryNames);
     }
 
+    private DataOperator dataOperator = new DataOperator();
     @SubCommand({"add","添加","新增","update","修改"})
     public void add(CommandSender sender,String name, String platform,String roomId, String... groups) {
         Subscription subscription = new Subscription(name, platform, roomId, groups,sender.getBot().getId());
@@ -105,6 +107,11 @@ public class SubscribeCommand extends JCompositeCommand {
         });
         sender.sendMessage("修改通知内容成功");
     }
+    @SubCommand({"reload","cz","重新载入","读取订阅","载入订阅"})
+    public void reload(CommandSender sender) {
+        dataOperator.loadSubscribeData(DataProperties.subscribeData);
+        sender.sendMessage("重新载入订阅信息成功");
+    }
     @SubCommand({"help","帮助","h","bz"})
     public void help(CommandSender sender) {
         MessageChainBuilder builder = new MessageChainBuilder();
@@ -124,7 +131,9 @@ public class SubscribeCommand extends JCompositeCommand {
                 .append("--------------\n")
                 .append("/sub notify <订阅名> <通知消息内容>").append("\n")
                 .append("解释：编辑在群里展示的通知内容").append("\n")
-                .append("示例：/sub notify 订阅名 开播了[图片]").append("\n");
+                .append("示例：/sub notify 订阅名 开播了[图片]").append("\n")
+                .append("/sub reload").append("\n")
+                .append("解释：重新载入已保存的订阅信息").append("\n");
 
         MessageChain chain = builder.build();
         sender.sendMessage(chain);

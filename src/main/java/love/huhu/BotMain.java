@@ -5,8 +5,9 @@ import cn.hutool.cron.CronUtil;
 import cn.hutool.setting.Setting;
 import love.huhu.command.SettingCommand;
 import love.huhu.command.SubscribeCommand;
+import love.huhu.operator.ConfigOperator;
+import love.huhu.operator.DataOperator;
 import love.huhu.pojo.Configuration;
-import love.huhu.pojo.Subscription;
 import love.huhu.properties.Context;
 import love.huhu.properties.DataProperties;
 import love.huhu.task.TimeTask;
@@ -28,6 +29,8 @@ import java.util.stream.Collectors;
 public final class BotMain extends JavaPlugin {
     public static final BotMain INSTANCE = new BotMain();
 
+    private DataOperator dataOperator = new DataOperator();
+    private ConfigOperator configOperator = new ConfigOperator();
     private BotMain() {
         super(new JvmPluginDescriptionBuilder( // 必要属性
                 "love.huhu.bot", // id
@@ -41,14 +44,14 @@ public final class BotMain extends JavaPlugin {
     @Override
     public void onEnable() {
         init();
-        registerPermission();
+//        registerPermission();
         GlobalEventChannel.INSTANCE.parentScope(BotMain.INSTANCE).subscribeAlways(BotOnlineEvent.class, event -> {
             //开始监听直播间
             listenBroadcast();
         });
     }
 
-    private void registerPermission() {
+    public void registerPermission() {
         List<AbstractPermitteeId.ExactUser> users = Arrays.stream(Context.configuration.getAdmins())
                 .map(admin-> new AbstractPermitteeId.ExactUser(Long.parseLong(admin)))
                 .collect(Collectors.toList());
@@ -67,17 +70,27 @@ public final class BotMain extends JavaPlugin {
         });
         if (Context.configuration.getEnable()) {
             CronUtil.start();
+            Context.logger.info("开始监听直播间列表");
+        } else {
+            Context.logger.info("使用/set start指令开始监听");
         }
     }
 
     private void init() {
+        initProperties();
         //读取订阅数据
-        loadSubscribeData("subscriptions.setting");
+        loadSubscribeData();
         //读取配置
-        loadConfig("config.setting");
+        loadConfig();
         //注册命令
         registerCommand();
 
+    }
+
+    private void initProperties() {
+        DataProperties.subscribeData = resolveDataFile(DataProperties.subscribeDataName);
+        Context.configData = resolveConfigFile(Context.configDataName);
+        Context.logger = getLogger();
     }
 
     private void registerCommand() {
@@ -86,58 +99,13 @@ public final class BotMain extends JavaPlugin {
     }
 
 
-    private void loadConfig(String configFileName) {
-        File file = resolveConfigFile(configFileName);
-        if (!file.exists()) {
-            FileUtil.touch(file);
-            Setting setting = new Setting(file, StandardCharsets.UTF_8, true);
-            setting.set("enable","true");
-            setting.set("admins","123456");
-            setting.set("bilibili","b站,bili,bilibili,B站");
-            setting.set("douyu","斗鱼,douyu");
-            setting.set("version","1.0");
-            setting.store();
-        }
-        Setting setting = new Setting(file, StandardCharsets.UTF_8, true);
-        //检查配置版本
-        String version = setting.getStr("version");
-        SemVersion pluginVersion = this.getDescription().getVersion();
-        SemVersion configVersion = SemVersion.parse(version);
-        if (pluginVersion.compareTo(configVersion)>0) {
-            //更新配置
-            getLogger().info("当前插件版本{"+pluginVersion+"},当前配置版本{"+configVersion+"}");
-            updateConfig(setting,getNewSetting());
-            getLogger().info("配置文件更新成功");
-        }
-        Configuration configuration = Configuration.convert(setting);
-        Context.configuration = configuration;
+    private void loadConfig() {
+        configOperator.loadConfig(getDescription().getVersion());
     }
 
-    private void updateConfig(Setting setting, Setting newSetting) {
-        setting.addSetting(newSetting);
-        setting.store();
-    }
 
-    private Setting getNewSetting() {
-        Setting setting = new Setting();
-//        setting.set("bilibili","b站,bili,B站");
-//        setting.set("douyu","斗鱼,douyu");
-//        setting.set("version","1.0");
-        return setting;
-    }
-
-    private void loadSubscribeData(String dataFileName) {
-        File file = resolveDataFile(dataFileName);
-        if (!file.exists()) {
-            FileUtil.touch(file);
-        }
-        Setting setting = new Setting(file, StandardCharsets.UTF_8, true);
-        Set<Subscription> subscriptions = new HashSet<>();
-        for (String group : setting.getGroups()) {
-            Subscription subscription = Subscription.convert(setting,group);
-            subscriptions.add(subscription);
-        }
-        DataProperties.subscriptions = subscriptions;
+    private void loadSubscribeData() {
+        dataOperator.loadSubscribeData(DataProperties.subscribeData);
     }
 
 }

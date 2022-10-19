@@ -2,9 +2,14 @@
 
 [![发行版](https://img.shields.io/github/v/release/Nier4ever/huhubot?style=flat-square)](https://github.com/NieR4ever/huhubot/releases)
 ![下载量](https://img.shields.io/github/downloads/nier4ever/huhubot/total?style=flat-square)
-
+[![MiraiForum](https://img.shields.io/badge/post-on%20MiraiForum-yellow)](https://mirai.mamoe.net/topic/1689)
 > 主播开播时自动向指定qq群发送直播通知，现支持斗鱼和b站
 
+**使用前应该查阅的相关文档或项目**
+
+* [User Manual](https://github.com/mamoe/mirai/blob/dev/docs/UserManual.md)
+* [Permission Command](https://github.com/mamoe/mirai/blob/dev/mirai-console/docs/BuiltInCommands.md#permissioncommand)
+* [Chat Command](https://github.com/project-mirai/chat-command)
 ## 食用指南
 0. 先使用下面这条命令安装[project-mirai/chat-command](https://github.com/project-mirai/chat-command)插件，或者手动安装
 
@@ -43,6 +48,7 @@ version = 1.0
   + `start`|`启动`|`开启`|`run`
   + `stop`|`暂停`|`停止`|`关闭`|`close`
   + `help`|`帮助`|`h`|`bz`
+  + `reload`
 + /`sub`|`订阅`|`dy`
   + `add`|`添加`|`新增`|`update`|`修改`
   + `save`|`保存`|`bc`

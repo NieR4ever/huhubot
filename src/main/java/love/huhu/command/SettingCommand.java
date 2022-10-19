@@ -3,6 +3,7 @@ package love.huhu.command;
 import cn.hutool.cron.CronUtil;
 import cn.hutool.setting.Setting;
 import love.huhu.BotMain;
+import love.huhu.operator.ConfigOperator;
 import love.huhu.properties.Context;
 import love.huhu.properties.DataProperties;
 import love.huhu.task.TimeTask;
@@ -30,6 +31,7 @@ public final class SettingCommand extends JCompositeCommand {
         super(owner, primaryName, secondaryNames);
     }
 
+    private ConfigOperator configOperator = new ConfigOperator();
     @SubCommand({"start","启动","开启","run"})
     public void start(CommandSender sender) {
         if (!Context.configuration.getEnable()) {
@@ -58,14 +60,23 @@ public final class SettingCommand extends JCompositeCommand {
         }
     }
 
+    @SubCommand({"reload","cz","重新载入","读取订阅","载入订阅"})
+    public void reload(CommandSender sender) {
+        configOperator.loadConfig(BotMain.INSTANCE.getDescription().getVersion());
+        sender.sendMessage("加载配置文件成功，只有插件是否启动的配置会在下次运行才被应用");
+    }
     @SubCommand({"help","帮助","h","bz"})
     public void help(CommandSender sender) {
         MessageChainBuilder builder = new MessageChainBuilder();
         builder
                 .append("/set start").append("\n")
                 .append("解释：开始监听直播间列表，默认为开启").append("\n")
+                .append("--------------\n")
                 .append("/set stop").append("\n")
-                .append("解释：停止监听直播间列表").append("\n");
+                .append("解释：停止监听直播间列表").append("\n")
+                .append("--------------\n")
+                .append("/set reload").append("\n")
+                .append("解释：重新读取配置文件").append("\n");
         MessageChain chain = builder.build();
         sender.sendMessage(chain);
     }
