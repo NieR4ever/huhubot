@@ -52,7 +52,7 @@ public class ConfigOperator {
         Setting setting = new Setting();
 //        setting.set("bilibili","b站,bili,B站");
 //        setting.set("douyu","斗鱼,douyu");
-//        setting.set("version","1.0");
+        setting.set("version","1.1.0");
         return setting;
     }
 }

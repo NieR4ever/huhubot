@@ -8,7 +8,7 @@ plugins {
 }
 
 group = "love.huhu"
-version = "1.0"
+version = "1.1.0"
 repositories {
     maven("https://maven.aliyun.com/repository/public")
     mavenCentral()
