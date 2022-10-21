@@ -39,12 +39,12 @@ public final class BotMain extends JavaPlugin {
                 .name("提醒开播机器人")
                 .info("为qq群提供提醒主播开播的服务")
                 .build());
+//        super(JvmPluginDescription.loadFromResource());
     }
 
     @Override
     public void onEnable() {
         init();
-//        registerPermission();
         GlobalEventChannel.INSTANCE.parentScope(BotMain.INSTANCE).subscribeAlways(BotOnlineEvent.class, event -> {
             //开始监听直播间
             listenBroadcast();
