@@ -33,7 +33,6 @@ public class MessageChainOperator {
         List<String> variables = resolveVariableName(sb);
         //插值
         insertValue(variables, subscription.getBroadcast(), sb);
-        System.err.println(sb);
         return sb.toString();
     }
 
@@ -68,28 +67,22 @@ public class MessageChainOperator {
     }
 
     private void resolveMessageType(List<String> names, String[] args) {
-        System.err.println("开始处理消息类型");
         for (int i = 0; i < names.size(); i++) {
             String name = names.get(i).replaceAll(" ", "").toLowerCase();
             if (StrUtil.isBlank(args[i]) || !args[i].matches(regex_uri)) {
-                System.err.println("字符串为空或正则不匹配");
                 continue;
             }
             String type = HttpRequest.head(args[i]).execute().header("Content-Type");
             if(StrUtil.isBlank(type)) {
-                System.err.println("type:"+type);
                 continue;
             }
             if (!type.startsWith("image/") && !type.matches(regex_img)) {
-                System.err.println("type不是以image格式");
                 continue;
             }
-            System.err.println("以上判断都没问题");
             byte[] bytes = HttpUtil.downloadBytes(args[i]);
             //上传图片
             Image image = Contact.uploadImage(Bot.getInstance(subscription.getBotNumber()).getAsFriend(), ExternalResource.create(bytes));
             args[i] = image.serializeToMiraiCode();
-            System.err.println(args[i]);
         }
     }
 

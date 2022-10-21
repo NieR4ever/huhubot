@@ -8,6 +8,7 @@ import net.mamoe.mirai.message.code.MiraiCode;
 import net.mamoe.mirai.message.data.MessageChain;
 
 import java.util.Arrays;
+import java.util.NoSuchElementException;
 
 /**
  * 开播是的发送通知线程
@@ -27,16 +28,20 @@ public class TimeTask extends Thread{
             //之前未开播,现在开播了
             //通知群
 
-            Bot bot = Bot.getInstanceOrNull(subscription.getBotNumber());
-            if (bot == null) {
+            Bot bot = null;
+            try {
+                bot = Bot.getInstance(subscription.getBotNumber());
+            } catch (NoSuchElementException e) {
                 Context.logger.error("负责通知的bot账号未上线或不存在");
+                e.printStackTrace();
                 return;
             }
             //加载动态信息
             MessageChainOperator op = new MessageChainOperator();
             String dynamicMiraiCode = op.processTemplate(subscription);
             MessageChain chain = MiraiCode.deserializeMiraiCode(dynamicMiraiCode);
-            Arrays.stream(subscription.getGroups()).forEach(group-> bot.getGroup(Long.parseLong(group)).sendMessage(chain));
+            Bot finalBot = bot;
+            Arrays.stream(subscription.getGroups()).forEach(group-> finalBot.getGroup(Long.parseLong(group)).sendMessage(chain));
         }
     }
 }

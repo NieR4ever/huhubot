@@ -72,6 +72,8 @@ public final class BotMain extends JavaPlugin {
      * 监听直播间
      */
     private void listenBroadcast() {
+        //fix:重复添加计划任务
+        CronUtil.getScheduler().clear();
         //计划任务，每分钟对每一个订阅查询一次直播间信息
         CronUtil.schedule("* * * * * *", (Runnable) () -> {
             DataProperties.subscriptions.forEach(subscription -> new TimeTask(subscription).start());
