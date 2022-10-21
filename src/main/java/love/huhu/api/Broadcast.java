@@ -18,43 +18,17 @@ public class Broadcast {
     private String keyframeUrl;
     private String liveTime;
     private String tags;
+    private String roomUrl;
 
     public Broadcast() {
     }
 
-    public Broadcast(String uid, String roomId, Long attention, Long online, String description, Integer liveStatus, String areaName, String backgroundUrl, String title, String userCoverUrl, String keyframeUrl, String liveTime, String tags) {
-        this.uid = uid;
-        this.roomId = roomId;
-        this.attention = attention;
-        this.online = online;
-        this.description = description;
-        this.liveStatus = liveStatus;
-        this.areaName = areaName;
-        this.backgroundUrl = backgroundUrl;
-        this.title = title;
-        this.userCoverUrl = userCoverUrl;
-        this.keyframeUrl = keyframeUrl;
-        this.liveTime = liveTime;
-        this.tags = tags;
+    public String getRoomUrl() {
+        return roomUrl;
     }
 
-    @Override
-    public String toString() {
-        return "Broadcast{" +
-                "uid='" + uid + '\'' +
-                ", roomId='" + roomId + '\'' +
-                ", attention=" + attention +
-                ", online=" + online +
-                ", description='" + description + '\'' +
-                ", liveStatus=" + liveStatus +
-                ", areaName='" + areaName + '\'' +
-                ", backgroundUrl='" + backgroundUrl + '\'' +
-                ", title='" + title + '\'' +
-                ", userCoverUrl='" + userCoverUrl + '\'' +
-                ", keyframeUrl='" + keyframeUrl + '\'' +
-                ", liveTime='" + liveTime + '\'' +
-                ", tags='" + tags + '\'' +
-                '}';
+    public void setRoomUrl(String roomUrl) {
+        this.roomUrl = roomUrl;
     }
 
     public String getUid() {

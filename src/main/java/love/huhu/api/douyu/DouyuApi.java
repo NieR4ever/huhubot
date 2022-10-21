@@ -15,6 +15,7 @@ import love.huhu.pojo.Subscription;
 public class DouyuApi implements PlatformApi {
 
     private static String url = "https://web.sinsyth.com/lxapi/douyujx.x?rid=";
+    private static String roomUrl = "https://www.douyu.com/";
     @Override
     public boolean getLiveStatus(Subscription subscription) {
         String roomId = subscription.getRoomId();
@@ -42,5 +43,6 @@ public class DouyuApi implements PlatformApi {
         broadcast.setTitle(title);
         broadcast.setKeyframeUrl(keyframeUrl);
         broadcast.setDescription(description);
+        broadcast.setRoomUrl(roomUrl+roomId);
     }
 }

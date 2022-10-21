@@ -14,6 +14,7 @@ import love.huhu.pojo.Subscription;
  */
 public class BiliBiliApi implements PlatformApi {
     private static String url = "https://api.live.bilibili.com/room/v1/Room/get_info?";
+    private static String roomUrl = "https://live.bilibili.com/";
 
     public boolean getLiveStatus(Subscription subscription) {
         String roomId = subscription.getRoomId();
@@ -60,5 +61,6 @@ public class BiliBiliApi implements PlatformApi {
         broadcast.setLiveStatus(liveStatus);
         broadcast.setLiveTime(liveTime);
         broadcast.setTags(tags);
+        broadcast.setRoomUrl(roomUrl+roomId);
     }
 }
