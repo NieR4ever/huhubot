@@ -2,6 +2,7 @@ package love.huhu.task;
 
 import love.huhu.operator.MessageChainOperator;
 import love.huhu.pojo.Subscription;
+import love.huhu.properties.Context;
 import net.mamoe.mirai.Bot;
 import net.mamoe.mirai.message.code.MiraiCode;
 import net.mamoe.mirai.message.data.MessageChain;
@@ -25,7 +26,12 @@ public class TimeTask extends Thread{
         if (!oldLiveStatus && newLiveStatus) {
             //之前未开播,现在开播了
             //通知群
-            Bot bot = Bot.getInstance(subscription.getBotNumber());
+
+            Bot bot = Bot.getInstanceOrNull(subscription.getBotNumber());
+            if (bot == null) {
+                Context.logger.error("负责通知的bot账号未上线或不存在");
+                return;
+            }
             //加载动态信息
             MessageChainOperator op = new MessageChainOperator();
             String dynamicMiraiCode = op.processTemplate(subscription);

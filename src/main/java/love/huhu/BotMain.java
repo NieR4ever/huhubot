@@ -45,10 +45,11 @@ public final class BotMain extends JavaPlugin {
     @Override
     public void onEnable() {
         init();
-        GlobalEventChannel.INSTANCE.parentScope(BotMain.INSTANCE).subscribeAlways(BotOnlineEvent.class, event -> {
+        GlobalEventChannel.INSTANCE.parentScope(BotMain.INSTANCE).subscribeOnce(BotOnlineEvent.class, event -> {
             //开始监听直播间
             listenBroadcast();
         });
+
     }
 
     public void registerPermission() {
