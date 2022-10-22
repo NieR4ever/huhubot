@@ -158,7 +158,7 @@ public class SubscribeCommand extends JCompositeCommand {
                 .append("解释：删除一条订阅").append("\n")
                 .append("--------------\n")
                 .append("/sub list [订阅名]").append("\n")
-                .append("解释：显示当前订阅列表").append("\n")
+                .append("解释：显示当前订阅列表，支持模糊搜索").append("\n")
                 .append("--------------\n")
                 .append("/sub notify <订阅名> <通知消息内容>").append("\n")
                 .append("解释：编辑在群里展示的通知内容").append("\n")
