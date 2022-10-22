@@ -44,6 +44,6 @@ public class DataOperator {
 
         }
         //去除文件中没有的订阅
-        DataProperties.subscriptions.retainAll(subscriptions);
+        DataProperties.subscriptions = subscriptions;
     }
 }
