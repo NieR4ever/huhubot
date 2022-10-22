@@ -43,6 +43,11 @@ public class Subscription {
         this.botNumber = botNumber;
         this.notifyMiraiCode = "开播了";
     }
+
+    public Subscription(String name) {
+        this.name = name;
+    }
+
     private PlatformEnum resolvePlatform(String platform) {
         Map<PlatformEnum, String[]> map = Context.configuration.getPlatformEnumMap();
         PlatformEnum[] result = new PlatformEnum[1];

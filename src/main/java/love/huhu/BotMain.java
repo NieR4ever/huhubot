@@ -52,6 +52,7 @@ public final class BotMain extends JavaPlugin {
 
     }
 
+
     public void registerPermission() {
         //将配置中的管理员字符数组转成权限被许可人列表
         List<AbstractPermitteeId.ExactUser> users = Arrays.stream(Context.configuration.getAdmins())
@@ -93,6 +94,8 @@ public final class BotMain extends JavaPlugin {
         loadSubscribeData();
         //读取配置
         loadConfig();
+        //注册权限
+        registerPermission();
         //注册命令
         registerCommand();
 

@@ -2,7 +2,6 @@ package love.huhu.operator;
 
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.setting.Setting;
-import love.huhu.BotMain;
 import love.huhu.pojo.Configuration;
 import love.huhu.properties.Context;
 import net.mamoe.mirai.console.util.SemVersion;
@@ -45,8 +44,6 @@ public class ConfigOperator {
         }
         Configuration configuration = Configuration.convert(setting);
         Context.configuration = configuration;
-        //更新权限
-        BotMain.INSTANCE.registerPermission();
     }
 
     /**
