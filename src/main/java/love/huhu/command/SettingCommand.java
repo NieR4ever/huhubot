@@ -13,6 +13,7 @@ import net.mamoe.mirai.console.permission.AbstractPermitteeId;
 import net.mamoe.mirai.console.permission.Permission;
 import net.mamoe.mirai.console.permission.PermissionId;
 import net.mamoe.mirai.console.permission.PermissionService;
+import net.mamoe.mirai.contact.User;
 import net.mamoe.mirai.message.data.MessageChain;
 import net.mamoe.mirai.message.data.MessageChainBuilder;
 import org.jetbrains.annotations.NotNull;
@@ -108,8 +109,16 @@ public final class SettingCommand extends JCompositeCommand {
                 .map(this::processPermissionStr)
                 .map(PermissionId::parseFromString)
                 .forEach(permissionId -> {
-                    System.out.println(Arrays.toString(permissions));
                     try {
+                        //检查操作用户有没有权限
+                        User granter = sender.getUser();
+                        if (granter != null) {
+                            boolean b = PermissionService.testPermission(permissionId, new AbstractPermitteeId.ExactUser(granter.getId()));
+                            if (!b) {
+                                throw new NoSuchElementException("你没有"+permissionId.getName()+"权限，不能将这条权限赋予别人");
+                            }
+                        }
+                        //赋予权限
                         PermissionService.permit(user,permissionId);
                         sb.append(permittee)
                                 .append("-->")

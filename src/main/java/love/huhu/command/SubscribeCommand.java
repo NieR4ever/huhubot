@@ -118,7 +118,7 @@ public class SubscribeCommand extends JCompositeCommand {
         });
         sender.sendMessage("修改通知内容成功");
     }
-    @SubCommand
+    @SubCommand({"echo","show","显示","展示","xs","zz"})
     public void echo(CommandSender sender, String name) {
         String finalName = name.trim();
         StringBuilder sb = new StringBuilder();
