@@ -25,7 +25,7 @@ public class ConfigOperator {
         if (!file.exists()) {
             //初次启动，创建文件并写入默认参数
             FileUtil.touch(file);
-            Setting setting = new Setting(file, StandardCharsets.UTF_8, true);
+            Setting setting = new Setting(file, StandardCharsets.UTF_8, false);
             setting.set("enable", "true");
             setting.set("admins", "123456");
             setting.set("bilibili", "b站,bili,bilibili,B站");
@@ -33,7 +33,7 @@ public class ConfigOperator {
             setting.set("version", "1.0");
             setting.store();
         }
-        Setting setting = new Setting(file, StandardCharsets.UTF_8, true);
+        Setting setting = new Setting(file, StandardCharsets.UTF_8, false);
         //检查配置版本
         String version = setting.getStr("version");
         SemVersion configVersion = SemVersion.parse(version);
@@ -65,7 +65,7 @@ public class ConfigOperator {
         setting.set("admins", "123456");
         setting.set("bilibili", "b站,bili,bilibili,B站");
         setting.set("douyu", "斗鱼,douyu");
-        setting.set("version", "1.2.0");
+        setting.set("version", "1.3.0");
         return setting;
     }
 

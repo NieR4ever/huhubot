@@ -8,6 +8,7 @@ import love.huhu.properties.DataProperties;
 import net.mamoe.mirai.console.command.CommandOwner;
 import net.mamoe.mirai.console.command.CommandSender;
 import net.mamoe.mirai.console.command.java.JCompositeCommand;
+import net.mamoe.mirai.message.code.MiraiCode;
 import net.mamoe.mirai.message.data.MessageChain;
 import net.mamoe.mirai.message.data.MessageChainBuilder;
 import net.mamoe.mirai.message.data.MessageContent;
@@ -54,7 +55,7 @@ public class SubscribeCommand extends JCompositeCommand {
     }
     @SubCommand({"save","保存","bc"})
     public void save(CommandSender sender) {
-        Setting setting = new Setting(BotMain.INSTANCE.resolveDataFile("subscriptions.setting").getAbsoluteFile(), StandardCharsets.UTF_8, true);
+        Setting setting = new Setting(DataProperties.subscribeData, StandardCharsets.UTF_8, false);
         List<String> groupToRemove = setting.getGroups().stream().filter(group -> DataProperties.subscriptions.stream().noneMatch(subscription -> subscription.getName().equals(group))).collect(Collectors.toList());
         groupToRemove.forEach(setting::clear);
         DataProperties.subscriptions.forEach(subscription -> {
@@ -121,22 +122,22 @@ public class SubscribeCommand extends JCompositeCommand {
     @SubCommand({"echo","show","显示","展示","xs","zz"})
     public void echo(CommandSender sender, String name) {
         String finalName = name.trim();
-        StringBuilder sb = new StringBuilder();
+        MessageChainBuilder builder = new MessageChainBuilder();
         Subscription result = DataProperties.subscriptions.stream()
                 .filter(subscription -> subscription.getName().equals(finalName))
                 .findFirst().orElse(null);
         if (result != null) {
-            sb.append("订阅名：").append(result.getName()).append("\n")
+            builder.append("订阅名：").append(result.getName()).append("\n")
                     .append("平台：").append(result.getPlatform().name()).append("\n")
                     .append("房间号：").append(result.getRoomId()).append("\n")
                     .append("直播状态：").append(result.getBroadcast().getLiveStatus() != null && result.getBroadcast().getLiveStatus() == 1 ? "正在直播" : "未开播").append("\n")
                     .append("通知群号：").append(String.join(",", result.getGroups())).append("\n")
                     .append("------通知内容--------\n")
-                    .append(result.getNotifyMiraiCode());
+                    .append(MiraiCode.deserializeMiraiCode(result.getNotifyMiraiCode()));
         } else {
-            sb.append("没有找到名为").append(finalName).append("的订阅信息");
+            builder.append("没有找到名为").append(finalName).append("的订阅信息");
         }
-        sender.sendMessage(sb.toString());
+        sender.sendMessage(builder.build());
     }
     @SubCommand({"reload","cz","重新载入","读取订阅","载入订阅"})
     public void reload(CommandSender sender) {
