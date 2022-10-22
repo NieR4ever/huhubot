@@ -65,7 +65,7 @@ public class ConfigOperator {
         setting.set("admins", "123456");
         setting.set("bilibili", "b站,bili,bilibili,B站");
         setting.set("douyu", "斗鱼,douyu");
-        setting.set("version", "1.3.0");
+        setting.set("version", "1.3.1");
         return setting;
     }
 

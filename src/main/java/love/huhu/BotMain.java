@@ -34,7 +34,7 @@ public final class BotMain extends JavaPlugin {
     private BotMain() {
         super(new JvmPluginDescriptionBuilder( // 必要属性
                 "love.huhu.bot", // id
-                "1.3.0" // version
+                "1.3.1" // version
         ).author("无糖雪碧")
                 .name("提醒开播机器人")
                 .info("为qq群提供提醒主播开播的服务")
