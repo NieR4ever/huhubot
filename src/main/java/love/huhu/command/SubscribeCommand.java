@@ -8,14 +8,14 @@ import love.huhu.properties.DataProperties;
 import net.mamoe.mirai.console.command.CommandOwner;
 import net.mamoe.mirai.console.command.CommandSender;
 import net.mamoe.mirai.console.command.java.JCompositeCommand;
-import net.mamoe.mirai.message.data.Message;
 import net.mamoe.mirai.message.data.MessageChain;
 import net.mamoe.mirai.message.data.MessageChainBuilder;
 import net.mamoe.mirai.message.data.MessageContent;
 import org.jetbrains.annotations.NotNull;
 
-import javax.xml.crypto.Data;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -73,13 +73,24 @@ public class SubscribeCommand extends JCompositeCommand {
         sender.sendMessage("删除订阅成功");
     }
     @SubCommand({"list","列表","all","lb"})
-    public void list(CommandSender sender) {
+    public void list(CommandSender sender, String... names) {
         MessageChainBuilder builder = new MessageChainBuilder();
         if (DataProperties.subscriptions.isEmpty()) {
             sender.sendMessage("订阅列表为空");
             return;
         }
-        DataProperties.subscriptions.forEach(subscription -> {
+        //通过names匹配订阅信息返回
+        HashSet<Subscription> subscriptions = new HashSet<>();
+        Arrays.stream(names)
+                .map(String::trim)
+                .map(name->DataProperties.subscriptions.stream()
+                        .filter(subscription -> subscription.getName().contains(name))
+                        .collect(Collectors.toSet())
+                ).forEach(subscriptions::addAll);
+        if (subscriptions.isEmpty()) {
+            subscriptions.addAll(DataProperties.subscriptions);
+        }
+        subscriptions.forEach(subscription -> {
             builder
                     .append("订阅名：").append(subscription.getName()).append("\n")
                     .append("平台：").append(subscription.getPlatform().name()).append("\n")
@@ -107,6 +118,26 @@ public class SubscribeCommand extends JCompositeCommand {
         });
         sender.sendMessage("修改通知内容成功");
     }
+    @SubCommand
+    public void echo(CommandSender sender, String name) {
+        String finalName = name.trim();
+        StringBuilder sb = new StringBuilder();
+        Subscription result = DataProperties.subscriptions.stream()
+                .filter(subscription -> subscription.getName().equals(finalName))
+                .findFirst().orElse(null);
+        if (result != null) {
+            sb.append("订阅名：").append(result.getName()).append("\n")
+                    .append("平台：").append(result.getPlatform().name()).append("\n")
+                    .append("房间号：").append(result.getRoomId()).append("\n")
+                    .append("直播状态：").append(result.getBroadcast().getLiveStatus() != null && result.getBroadcast().getLiveStatus() == 1 ? "正在直播" : "未开播").append("\n")
+                    .append("通知群号：").append(String.join(",", result.getGroups())).append("\n")
+                    .append("------通知内容--------\n")
+                    .append(result.getNotifyMiraiCode());
+        } else {
+            sb.append("没有找到名为").append(finalName).append("的订阅信息");
+        }
+        sender.sendMessage(sb.toString());
+    }
     @SubCommand({"reload","cz","重新载入","读取订阅","载入订阅"})
     public void reload(CommandSender sender) {
         dataOperator.loadSubscribeData(DataProperties.subscribeData);
@@ -126,14 +157,18 @@ public class SubscribeCommand extends JCompositeCommand {
                 .append("/sub rm <订阅名>").append("\n")
                 .append("解释：删除一条订阅").append("\n")
                 .append("--------------\n")
-                .append("/sub list").append("\n")
+                .append("/sub list [订阅名]").append("\n")
                 .append("解释：显示当前订阅列表").append("\n")
                 .append("--------------\n")
                 .append("/sub notify <订阅名> <通知消息内容>").append("\n")
                 .append("解释：编辑在群里展示的通知内容").append("\n")
                 .append("示例：/sub notify 订阅名 开播了[图片]").append("\n")
+                .append("--------------\n")
                 .append("/sub reload").append("\n")
-                .append("解释：重新载入已保存的订阅信息").append("\n");
+                .append("解释：重新载入已保存的订阅信息").append("\n")
+                .append("--------------\n")
+                .append("/sub echo <订阅名>").append("\n")
+                .append("解释：显示订阅的详细信息").append("\n");
 
         MessageChain chain = builder.build();
         sender.sendMessage(chain);
