@@ -32,7 +32,7 @@ public final class SettingCommand extends JCompositeCommand {
     private static final String parentPermissionStr = "love.huhu.bot:";
 
     public SettingCommand() {
-        this(BotMain.INSTANCE,"set","设置","sz");
+        this(BotMain.INSTANCE,"set","设置");
     }
 
     public SettingCommand(@NotNull CommandOwner owner, @NotNull String primaryName, @NotNull String... secondaryNames) {
@@ -68,13 +68,13 @@ public final class SettingCommand extends JCompositeCommand {
         }
     }
 
-    @SubCommand({"reload","cz","重新载入","读取订阅","载入订阅"})
+    @SubCommand({"reload","读取订阅","载入订阅"})
     public void reload(CommandSender sender) {
         configOperator.loadConfig(BotMain.INSTANCE.getDescription().getVersion());
         registerPermission();
         sender.sendMessage("加载配置文件成功，只有插件是否启动的配置会在下次运行才被应用");
     }
-    @SubCommand({"help","帮助","h","bz"})
+    @SubCommand({"help","帮助","h"})
     public void help(CommandSender sender) {
         MessageChainBuilder builder = new MessageChainBuilder();
         builder
@@ -101,7 +101,7 @@ public final class SettingCommand extends JCompositeCommand {
         sender.sendMessage(chain);
     }
 
-    @SubCommand({"permit","add","grant","授权","sq"})
+    @SubCommand({"permit","grant","授权"})
     public void permit(CommandSender sender, Long permittee, String... permissions) {
         StringBuffer sb = new StringBuffer();
         AbstractPermitteeId.ExactUser user = new AbstractPermitteeId.ExactUser(permittee);
@@ -136,7 +136,7 @@ public final class SettingCommand extends JCompositeCommand {
                 });
         sender.sendMessage(sb.toString());
     }
-    @SubCommand({"cancel","remove","取消","qx"})
+    @SubCommand({"cancel","remove","取消"})
     public void cancel(CommandSender sender, Long permittee, String permissionStr) {
         permissionStr = processPermissionStr(permissionStr);
         AbstractPermitteeId.ExactUser user = new AbstractPermitteeId.ExactUser(permittee);
@@ -152,7 +152,7 @@ public final class SettingCommand extends JCompositeCommand {
         }
         sender.sendMessage(StrUtil.format("取消{}的{}权限成功",permittee,permissionId.getName()));
     }
-    @SubCommand({"check","检查","jc"})
+    @SubCommand({"check","检查"})
     public void check(CommandSender sender, Long permittee) {
         AbstractPermitteeId.ExactUser user = new AbstractPermitteeId.ExactUser(permittee);
 

@@ -10,7 +10,7 @@ public class Broadcast {
     private Long attention;
     private Long online;
     private String description;
-    private Integer liveStatus;
+    private Integer liveStatus = 1; //默认正在直播
     private String areaName;
     private String backgroundUrl;
     private String title;

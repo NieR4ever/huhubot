@@ -53,7 +53,7 @@ public class SubscribeCommand extends JCompositeCommand {
         DataProperties.subscriptions.add(subscription);
         sender.sendMessage("添加订阅成功");
     }
-    @SubCommand({"save","保存","bc"})
+    @SubCommand({"save","保存"})
     public void save(CommandSender sender) {
         Setting setting = new Setting(DataProperties.subscribeData, StandardCharsets.UTF_8, false);
         List<String> groupToRemove = setting.getGroups().stream().filter(group -> DataProperties.subscriptions.stream().noneMatch(subscription -> subscription.getName().equals(group))).collect(Collectors.toList());
@@ -68,12 +68,12 @@ public class SubscribeCommand extends JCompositeCommand {
         setting.store();
         sender.sendMessage("保存/修改订阅成功");
     }
-    @SubCommand({"rm","删除","移除","del","delete","remove","sc"})
+    @SubCommand({"rm","删除","移除","del","delete","remove"})
     public void rm(CommandSender sender, String name) {
         DataProperties.subscriptions.removeIf(subscription -> subscription.getName().equals(name.trim()));
         sender.sendMessage("删除订阅成功");
     }
-    @SubCommand({"list","列表","all","lb"})
+    @SubCommand({"list","列表","all"})
     public void list(CommandSender sender, String... names) {
         MessageChainBuilder builder = new MessageChainBuilder();
         if (DataProperties.subscriptions.isEmpty()) {
@@ -89,7 +89,8 @@ public class SubscribeCommand extends JCompositeCommand {
                         .collect(Collectors.toSet())
                 ).forEach(subscriptions::addAll);
         if (subscriptions.isEmpty()) {
-            subscriptions.addAll(DataProperties.subscriptions);
+//            subscriptions.addAll(DataProperties.subscriptions);
+            builder.append("不存在有关").append(String.join("或", names)).append("的订阅");
         }
         subscriptions.forEach(subscription -> {
             builder
@@ -102,7 +103,7 @@ public class SubscribeCommand extends JCompositeCommand {
         });
         sender.sendMessage(builder.build());
     }
-    @SubCommand({"notify","通知","tz"})
+    @SubCommand({"notify","通知"})
     public void notify(CommandSender sender,String name, MessageContent... messages) {
         MessageChainBuilder builder = new MessageChainBuilder();
         for (MessageContent message : messages) {
@@ -119,7 +120,7 @@ public class SubscribeCommand extends JCompositeCommand {
         });
         sender.sendMessage("修改通知内容成功");
     }
-    @SubCommand({"echo","show","显示","展示","xs","zz"})
+    @SubCommand({"echo","show","显示","展示"})
     public void echo(CommandSender sender, String name) {
         String finalName = name.trim();
         MessageChainBuilder builder = new MessageChainBuilder();
@@ -139,12 +140,12 @@ public class SubscribeCommand extends JCompositeCommand {
         }
         sender.sendMessage(builder.build());
     }
-    @SubCommand({"reload","cz","重新载入","读取订阅","载入订阅"})
+    @SubCommand({"reload","读取订阅","载入订阅"})
     public void reload(CommandSender sender) {
         dataOperator.loadSubscribeData(DataProperties.subscribeData);
         sender.sendMessage("重新载入订阅信息成功");
     }
-    @SubCommand({"help","帮助","h","bz"})
+    @SubCommand({"help","帮助","h"})
     public void help(CommandSender sender) {
         MessageChainBuilder builder = new MessageChainBuilder();
         builder
