@@ -21,4 +21,6 @@ public class Context {
     public static File configData = null;
     //日志
     public static MiraiLogger logger = null;
+    //版本号
+    public static String version = "1.3.2";
 }
