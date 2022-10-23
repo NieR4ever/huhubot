@@ -88,8 +88,11 @@ public class SubscribeCommand extends JCompositeCommand {
                         .filter(subscription -> subscription.getName().contains(name))
                         .collect(Collectors.toSet())
                 ).forEach(subscriptions::addAll);
-        if (subscriptions.isEmpty()) {
-//            subscriptions.addAll(DataProperties.subscriptions);
+        //names的长度为0隐含了subscriptions为空
+        if (names.length == 0) {
+            subscriptions.addAll(DataProperties.subscriptions);
+        }
+        if (subscriptions.isEmpty()){
             builder.append("不存在有关").append(String.join("或", names)).append("的订阅");
         }
         subscriptions.forEach(subscription -> {
